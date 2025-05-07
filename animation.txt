@@ -1,0 +1,59 @@
+#include <GL/glut.h>
+
+
+float x = 0.0f, y = 0.0f;
+float xSpeed = 0.01f, ySpeed = 0.012f;
+float radius = 0.05f;
+
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+
+   
+    glTranslatef(x, y, 0.0f);
+    glColor3f(1.0f, 0.0f, 0.0f); 
+    glutSolidSphere(radius, 50, 50);
+
+    glutSwapBuffers();
+}
+
+
+void update(int value) {
+    x += xSpeed;
+    y += ySpeed;
+
+    // Bounce on wall collision
+    if (x + radius > 1.0f || x - radius < -1.0f)
+        xSpeed = -xSpeed;
+    if (y + radius > 1.0f || y - radius < -1.0f)
+        ySpeed = -ySpeed;
+
+    glutPostRedisplay();
+    glutTimerFunc(16, update, 0); // ~60 FPS
+}
+
+// Window reshape callback
+void reshape(int w, int h) {
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("Simple Bouncing Ball");
+
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutTimerFunc(0, update, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    glutMainLoop();
+    return 0;
+}

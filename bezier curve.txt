@@ -1,0 +1,62 @@
+#include <GL/glut.h>
+#include <cmath>
+#include <iostream>
+using namespace std;
+
+struct Point {
+    float x, y;
+};
+
+// Control points for the curve
+Point p0 = {100, 100};
+Point p1 = {200, 300};
+Point p2 = {400, 100};
+
+// Function to draw a point
+void drawPoint(float x, float y) {
+    glBegin(GL_POINTS);
+    glVertex2f(x, y);
+    glEnd();
+}
+
+// Function to compute a point on a quadratic Bézier curve
+void drawBezierCurve() {
+    glColor3f(1, 0, 0); // Red curve
+    for (float t = 0.0; t <= 1.0; t += 0.001) {
+        float x = (1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x;
+        float y = (1 - t) * (1 - t) * p0.y + 2 * (1 - t) * t * p1.y + t * t * p2.y;
+        drawPoint(x, y);
+    }
+
+    // Draw control points in blue
+    glColor3f(0, 0, 1);
+    drawPoint(p0.x, p0.y);
+    drawPoint(p1.x, p1.y);
+    drawPoint(p2.x, p2.y);
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    drawBezierCurve();
+    glFlush();
+}
+
+void init() {
+    glClearColor(1, 1, 1, 1); // White background
+    gluOrtho2D(0, 500, 0, 500);
+    glPointSize(2.0);
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Simple Quadratic Bezier Curve");
+
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+
+    return 0;
+}
